@@ -1,20 +1,38 @@
 from sqlalchemy.orm import Session
 
-from . import models, schemas
+from .models import Address
 
 
-def get_user(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
-
-
-def get_user_by_email(db: Session, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
-
-
-def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = user.password + "notreallyhashed"
-    db_user = models.User(email=user.email, hashed_password=fake_hashed_password)
-    db.add(db_user)
+def insert_into_table(db: Session, model_object: object) -> None:
+    db.add(model_object)
     db.commit()
-    db.refresh(db_user)
-    return db_user
+    db.refresh(model_object)
+
+
+def update_column(db: Session, model_object: object, data: dict) -> None:
+    model_object.update(data)
+    db.commit()
+
+
+def create_address(db: Session, co_ordinates: tuple, address: str):
+    address_object = Address(
+        address=address,
+        latitude=co_ordinates[0],
+        longitude=co_ordinates[1]
+    )
+    insert_into_table(db=db, model_object=address_object)
+    return address_object
+
+
+def get_all_address(db: Session):
+    return db.query(Address).all()
+
+
+def get_address_by_id(db: Session, address_id: int):
+    return db.query(Address).filter(Address.id == address_id).first()
+
+
+def update_address(db: Session, model_object: object, data: dict):
+    update_column(db=db, model_object=model_object, data=data)
+    db.refresh(model_object)
+    return model_object

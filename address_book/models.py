@@ -1,13 +1,15 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Float, DateTime
+from sqlalchemy.sql import func
 
-from .database import Base
+from address_book.database import Base
 
 
-class User(Base):
-    __tablename__ = "users"
+class Address(Base):
+    __tablename__ = "Address"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
+    address = Column(String, unique=True, index=True)
+    latitude = Column(Float)
+    longitude = Column(Float)
+    created_at = Column(DateTime(), default=func.now())
+    updated_at = Column(DateTime(), onupdate=func.now())
