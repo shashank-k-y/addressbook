@@ -1,4 +1,11 @@
-from fastapi import Depends, FastAPI, HTTPException
+from typing import List
+
+from fastapi import (
+    Depends,
+    FastAPI,
+    HTTPException,
+    status
+)
 from sqlalchemy.orm import Session
 from geopy.exc import GeocoderTimedOut
 
@@ -8,7 +15,8 @@ from address_book.crud import (
     create_address,
     get_address_by_id,
     get_all_address,
-    update_address
+    update_address,
+    get_address_by_co_ordinates
 )
 
 from .schemas import Address, CreateAddressbyAddress
@@ -45,8 +53,10 @@ def get_db():
 #         raise HTTPException(status_code=404, detail="User not found")
 #     return db_user
 
-@app.post("/addressbook/address/")
-def create_address(
+@app.post(
+    "/addressbook", response_model=Address, status_code=status.HTTP_201_CREATED
+)
+def create_address_in_address_book(
     request: CreateAddressbyAddress, db: Session = Depends(get_db)
 ):
     try:
@@ -61,18 +71,32 @@ def create_address(
             status_code=400, detail="geopy was not able to seacrh the address"
         )
 
+    address_item = get_address_by_co_ordinates(
+        db=db, co_ordinates=co_ordinates
+    )
+    if address_item:
+        raise HTTPException(
+            status_code=400, detail="Address already exists"
+        )
+
     return create_address(
         db=db, co_ordinates=co_ordinates, address=request.address
     )
 
 
-@app.get("/addressbook/list")
+@app.get(
+    "/addressbook", response_model=List[Address],
+    status_code=status.HTTP_200_OK
+)
 def get_all_addresses(db: Session = Depends(get_db)):
     return get_all_address(db=db)
 
 
-@app.get("/addressbook/{address_id}")
-def get_address_by_id(address_id: int, db: Session = Depends(get_db)):
+@app.get(
+    "/addressbook/{address_id}", response_model=Address,
+    status_code=status.HTTP_200_OK
+)
+def get_address(address_id: int, db: Session = Depends(get_db)):
     address_instance = get_address_by_id(db=db, address_id=address_id)
     if not address_instance:
         raise HTTPException(status_code=404, detail="address not found")
@@ -80,18 +104,23 @@ def get_address_by_id(address_id: int, db: Session = Depends(get_db)):
     return address_instance
 
 
-@app.put("/addressbook/{address_id}")
+@app.put(
+    "/addressbook/{address_id}", response_model=Address,
+    status_code=status.HTTP_200_OK
+)
 def update_address_by_id(
     address_id: int,
-    request_data: Address,
+    address: Address,
     db: Session = Depends(get_db)
 ):
-    address_instance = get_address_by_id(db=db, address_id=address_id)
-    if not address_instance:
+    address_instance_to_update = get_address_by_id(
+        db=db, address_id=address_id
+    )
+    if not address_instance_to_update:
         raise HTTPException(
             status_code=404, detail="address not found for the given id"
         )
 
     return update_address(
-        db=db, data=request_data, model_object=address_instance
+        db=db, address_object=address_instance_to_update, address=address
     )
