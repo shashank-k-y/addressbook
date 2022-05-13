@@ -44,3 +44,8 @@ def update_address(
     db.commit()
     db.refresh(address_object)
     return address_object
+
+
+def delete_address(db: Session, address_object: object):
+    db.delete(address_object)
+    db.commit()

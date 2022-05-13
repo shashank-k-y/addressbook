@@ -13,6 +13,7 @@ from . import models
 from .database import SessionLocal, engine
 from address_book.crud import (
     create_address,
+    delete_address,
     get_address_by_id,
     get_all_address,
     update_address,
@@ -124,3 +125,17 @@ def update_address_by_id(
     return update_address(
         db=db, address_object=address_instance_to_update, address=address
     )
+
+
+@app.delete(
+    "/addressbook/{address_id}", status_code=status.HTTP_200_OK
+)
+def delete_address_from_addressbook(
+    address_id: int, db: Session = Depends(get_db)
+):
+    address_instance = get_address_by_id(db=db, address_id=address_id)
+    if not address_instance:
+        raise HTTPException(status_code=404, detail="address not found")
+
+    delete_address(db=db, address_object=address_instance)
+    return "address deleted successfully!"
