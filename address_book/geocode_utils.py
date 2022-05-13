@@ -38,7 +38,7 @@ def get_addresses_within_given_distance(
         )
 
         if distance_between_locations <= distance:
-            address.distance = distance_between_locations
+            address.distance = ("%.2f" % distance_between_locations) + ' km'
             address_within_distance_list.append(address)
 
     return address_within_distance_list
