@@ -20,7 +20,11 @@ from address_book.crud import (
     get_address_by_co_ordinates
 )
 
-from .schemas import Address, CreateAddressbyAddress
+from .schemas import (
+    Address,
+    CreateAddressbyAddress,
+    FindAddressResponse
+)
 
 from address_book.geocode_utils import (
     get_location_co_ordinates,
@@ -139,7 +143,7 @@ def delete_address_from_addressbook(
 
 
 @app.get(
-    "/addressbook/", response_model=List[Address],
+    "/addressbook/", response_model=List[FindAddressResponse],
     status_code=status.HTTP_200_OK
 )
 def find_addresses_within_given_distance_and_location(

@@ -15,7 +15,10 @@ class Address(BaseModel):
     longitude: float
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
-    distance: Optional[float]
 
     class Config:
         orm_mode = True
+
+
+class FindAddressResponse(Address):
+    distance: Optional[str]
