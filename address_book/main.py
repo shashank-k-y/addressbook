@@ -107,9 +107,7 @@ def get_address(address_id: int, db: Session = Depends(get_db)):
     status_code=status.HTTP_200_OK
 )
 def update_address_by_id(
-    address_id: int,
-    address: Address,
-    db: Session = Depends(get_db)
+    address_id: int, address: Address, db: Session = Depends(get_db)
 ):
     address_instance_to_update = get_address_by_id(
         db=db, address_id=address_id
