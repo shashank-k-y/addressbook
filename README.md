@@ -31,7 +31,7 @@ create directory ```mkdir <directory-name>```
   
   create virtual environment
   
-  ```vitualenv <virtualenv-name>```
+  ```virtualenv <virtualenv-name>```
   
   activate virtual environment
   
@@ -39,7 +39,7 @@ create directory ```mkdir <directory-name>```
 
 **step3:**
   
-  clone the repo using command ```git@github.com:shashank-k-y/addressbook.git```
+  clone the repo using command ```https://github.com/shashank-k-y/addressbook.git```
 
 **step4:**
   Install dependencies:
